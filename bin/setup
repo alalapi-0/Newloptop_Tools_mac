@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# shellcheck source=../scripts/utils/log.sh
+source "${REPO_ROOT}/scripts/utils/log.sh"
+# shellcheck source=../scripts/utils/step.sh
+source "${REPO_ROOT}/scripts/utils/step.sh"
+# shellcheck source=../scripts/utils/cli.sh
+source "${REPO_ROOT}/scripts/utils/cli.sh"
+# shellcheck source=../scripts/utils/check.sh
+source "${REPO_ROOT}/scripts/utils/check.sh"
+
+register_step "xcode_clt" "${REPO_ROOT}/scripts/bootstrap/01_xcode_clt.sh" "Install Xcode Command Line Tools"
+register_step "homebrew" "${REPO_ROOT}/scripts/bootstrap/02_homebrew.sh" "Install Homebrew and shellenv"
+register_step "packages_cli" "${REPO_ROOT}/scripts/bootstrap/03_packages_cli.sh" "Install CLI packages"
+register_step "packages_media" "${REPO_ROOT}/scripts/bootstrap/04_packages_media.sh" "Install media packages"
+register_step "apps_cask" "${REPO_ROOT}/scripts/bootstrap/05_apps_cask.sh" "Install GUI apps (cask)"
+register_step "git" "${REPO_ROOT}/scripts/bootstrap/10_git.sh" "Install and configure Git"
+register_step "python" "${REPO_ROOT}/scripts/bootstrap/20_python.sh" "Install Python tooling (pyenv)"
+
+parse_args "$@"
+
+if [[ -z "${SETUP_LOG_DIR}" ]]; then
+  SETUP_LOG_DIR="${REPO_ROOT}/logs"
+fi
+
+check_log_dir "${SETUP_LOG_DIR}"
+
+SETUP_LOG_FILE="${SETUP_LOG_DIR}/setup_$(date "+%Y%m%d_%H%M%S").log"
+export SETUP_LOG_FILE
+log_init "${SETUP_LOG_FILE}"
+
+export SETUP_DRY_RUN
+export SETUP_YES
+export SETUP_REPO_ROOT="${REPO_ROOT}"
+export SETUP_PROFILE
+
+log_info "Log file: ${SETUP_LOG_FILE}"
+
+check_macos
+check_bash
+check_network
+check_brew
+
+if [[ -n "${SETUP_ONLY}" && ${#SETUP_SKIP_STEPS[@]} -gt 0 ]]; then
+  log_warn "--only is set; --skip entries will be ignored."
+  SETUP_SKIP_STEPS=()
+fi
+
+if [[ -n "${SETUP_ONLY}" ]]; then
+  if ! step_exists "${SETUP_ONLY}"; then
+    log_err "Unknown step for --only: ${SETUP_ONLY}"
+    exit 1
+  fi
+fi
+
+if [[ ${#SETUP_SKIP_STEPS[@]} -gt 0 ]]; then
+  for skip_step in "${SETUP_SKIP_STEPS[@]}"; do
+    if ! step_exists "${skip_step}"; then
+      log_err "Unknown step for --skip: ${skip_step}"
+      exit 1
+    fi
+  done
+fi
+
+if [[ "${SETUP_DRY_RUN}" -eq 1 ]]; then
+  log_info "Dry-run mode enabled. No changes will be made."
+fi
+
+step_run_all
