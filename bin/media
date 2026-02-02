@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# shellcheck source=../scripts/utils/log.sh
+source "${ROOT_DIR}/scripts/utils/log.sh"
+# shellcheck source=../scripts/utils/fs.sh
+source "${ROOT_DIR}/scripts/utils/fs.sh"
+
+MEDIA_DRY_RUN=0
+MEDIA_LOG_DIR="${ROOT_DIR}/logs"
+MEDIA_OUT_DIR="${ROOT_DIR}/out"
+COMMAND=""
+
+print_help() {
+  cat <<'HELP'
+Media toolbox (macOS only)
+
+Usage:
+  ./bin/media --help
+  ./bin/media [options] <command> [command options]
+
+Commands:
+  probe           查看媒体信息（json/txt）
+  cut             按时间戳切片（单文件/批处理）
+  extract-audio   从视频抽取音频
+  transcode       转码为 mp4(h264+aac)
+  concat          拼接多个片段（可选）
+
+Global options:
+  --help           Show help
+  --dry-run        Print commands without executing
+  --log-dir <dir>  Directory for logs (default: logs/)
+  --out-dir <dir>  Default output directory (default: out/)
+
+Examples:
+  ./bin/media --help
+  ./bin/media probe --in input.mp4
+  ./bin/media cut --tasks tasks.txt
+HELP
+}
+
+has_arg() {
+  local needle="$1"
+  shift
+  local arg
+  for arg in "$@"; do
+    if [[ "${arg}" == "${needle}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --help|-h)
+      print_help
+      exit 0
+      ;;
+    --dry-run)
+      MEDIA_DRY_RUN=1
+      shift
+      ;;
+    --log-dir)
+      if [[ -z "${2:-}" ]]; then
+        log_err "--log-dir requires a path"
+        exit 1
+      fi
+      MEDIA_LOG_DIR="$2"
+      shift 2
+      ;;
+    --out-dir)
+      if [[ -z "${2:-}" ]]; then
+        log_err "--out-dir requires a path"
+        exit 1
+      fi
+      MEDIA_OUT_DIR="$2"
+      shift 2
+      ;;
+    --*)
+      log_err "Unknown global option: $1"
+      print_help
+      exit 1
+      ;;
+    *)
+      COMMAND="$1"
+      shift
+      break
+      ;;
+  esac
+ done
+
+if [[ -z "${COMMAND}" ]]; then
+  print_help
+  exit 1
+fi
+
+ensure_dir "${MEDIA_LOG_DIR}"
+ensure_dir "${MEDIA_OUT_DIR}"
+
+TIMESTAMP="$(date "+%Y%m%d_%H%M%S")"
+LOG_FILE="${MEDIA_LOG_DIR}/media_${TIMESTAMP}.log"
+export SETUP_LOG_FILE="${LOG_FILE}"
+log_init "${LOG_FILE}"
+log_info "media entrypoint start (command: ${COMMAND})"
+
+ARGS=("$@")
+if [[ "${MEDIA_DRY_RUN}" -eq 1 ]]; then
+  if ! has_arg "--dry-run" "${ARGS[@]}"; then
+    ARGS+=("--dry-run")
+  fi
+fi
+if [[ -n "${MEDIA_OUT_DIR}" ]]; then
+  if ! has_arg "--out-dir" "${ARGS[@]}"; then
+    ARGS+=("--out-dir" "${MEDIA_OUT_DIR}")
+  fi
+fi
+
+SCRIPT=""
+case "${COMMAND}" in
+  probe)
+    SCRIPT="${ROOT_DIR}/scripts/media/probe.sh"
+    ;;
+  cut)
+    SCRIPT="${ROOT_DIR}/scripts/media/cut.sh"
+    ;;
+  extract-audio|extract_audio)
+    SCRIPT="${ROOT_DIR}/scripts/media/extract_audio.sh"
+    ;;
+  transcode)
+    SCRIPT="${ROOT_DIR}/scripts/media/transcode.sh"
+    ;;
+  concat)
+    SCRIPT="${ROOT_DIR}/scripts/media/concat.sh"
+    ;;
+  *)
+    log_err "Unknown command: ${COMMAND}"
+    print_help
+    exit 1
+    ;;
+ esac
+
+if [[ ! -x "${SCRIPT}" ]]; then
+  log_err "Command script not found or not executable: ${SCRIPT}"
+  exit 1
+fi
+
+"${SCRIPT}" "${ARGS[@]}"
