@@ -1,0 +1,8 @@
+iina
+google-chrome
+wechat
+dingtalk
+pycharm
+visual-studio-code
+iterm2
+keka
