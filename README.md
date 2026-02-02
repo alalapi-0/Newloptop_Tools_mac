@@ -7,7 +7,8 @@
 
 ## 脚本模式（可选）
 - 推荐顺序：先阅读 `docs/SETUP_MAC.md`，脚本模式用于自动化与引导。
-- 当前已支持自动化步骤：xcode_clt、homebrew、packages_cli。
+- 当前已支持自动化步骤：xcode_clt、homebrew、packages_cli、packages_media、apps_cask。
+- git、python 相关步骤仍可能是占位实现，后续会完善。
 - 示例命令：
   - `./bin/setup --help`
   - `./bin/setup --dry-run`

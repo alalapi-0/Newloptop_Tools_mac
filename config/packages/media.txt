@@ -1,0 +1,6 @@
+# Media and file processing tools
+ffmpeg
+mediainfo
+imagemagick
+exiftool
+# yt-dlp
