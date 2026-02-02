@@ -6,13 +6,15 @@
 - 直接按顺序执行完整配置文档：`docs/SETUP_MAC.md`
 
 ## 脚本模式（可选）
-- 推荐顺序：先阅读 `docs/SETUP_MAC.md`，脚本模式用于引导与未来自动化。
+- 推荐顺序：先阅读 `docs/SETUP_MAC.md`，脚本模式用于自动化与引导。
+- 当前已支持自动化步骤：xcode_clt、homebrew、packages_cli。
 - 示例命令：
   - `./bin/setup --help`
   - `./bin/setup --dry-run`
   - `./bin/setup --only homebrew`
   - `./bin/setup --skip apps_cask`
   - `./bin/setup --yes`
+  - `./bin/setup --profile default --only packages_cli`
 - 日志说明：默认在 `logs/` 生成带时间戳的运行日志。
 
 ## 文档索引

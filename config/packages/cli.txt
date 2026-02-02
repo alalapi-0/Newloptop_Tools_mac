@@ -1,0 +1,19 @@
+# CLI packages for macOS setup
+wget
+curl
+aria2
+jq
+ripgrep
+fd
+bat
+tree
+htop
+tmux
+watch
+coreutils
+gnu-sed
+gawk
+findutils
+p7zip
+unar
+zstd

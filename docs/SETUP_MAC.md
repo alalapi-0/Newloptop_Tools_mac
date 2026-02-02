@@ -7,11 +7,13 @@
 - 建议在稳定网络环境下执行。
 
 ## 脚本模式说明（可选）
-- 当前脚本模式主要用于引导与框架搭建，仍以本手册中的手动命令为准。
+- 当前脚本模式已支持自动执行以下步骤：xcode_clt、homebrew、packages_cli。
+- 其他步骤仍以本手册中的手动命令为准。
 - 从桌面执行的推荐方式：
   1. 在终端进入仓库目录（例如 `cd ~/Desktop/Newloptop_Tools_mac`）。
   2. 如有需要，赋予可执行权限：`chmod +x ./bin/setup`。
   3. 先进行 dry-run：`./bin/setup --dry-run`。
+  4. 示例：指定 profile 安装 CLI 包 `./bin/setup --profile default --only packages_cli`。
 
 ---
 
