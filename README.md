@@ -22,10 +22,11 @@
 ## 文档索引
 - `docs/README.md`：文档导航与说明
 - `docs/SETUP_MAC.md`：新机完整配置步骤（按顺序复制执行）
+- `docs/media.md`：音视频工具箱使用说明（bin/media）
 
 ## 目录结构（简要）
 - `docs/`：文档与使用说明
-- `bin/`：未来提供可直接运行的入口脚本
+- `bin/`：可直接运行的入口脚本
 - `scripts/`：按领域拆分的脚本工具箱
 - `config/`：配置模板与包清单
 - `tests/`：测试与校验脚本
@@ -41,3 +42,13 @@
 - `bin/media`：常用音视频处理封装
 - `scripts/media/`：批量转码、压缩、裁剪
 - `scripts/utils/`：文件整理、批量改名、校验
+
+## 工具箱：bin/media
+- 依赖：先安装 `packages_media`（包含 `ffmpeg`、`mediainfo`）。
+  - 执行：`./bin/setup --only packages_media`
+  - 或参考 `docs/SETUP_MAC.md` 手动安装
+- 最短示例：
+  - `./bin/media --help`
+  - `./bin/media probe --in xxx.mp4`
+  - `./bin/media cut --tasks tasks.txt`
+- 详细使用说明：`docs/media.md`
