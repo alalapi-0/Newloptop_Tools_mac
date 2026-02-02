@@ -5,6 +5,16 @@
 ## 最短开始路径
 - 直接按顺序执行完整配置文档：`docs/SETUP_MAC.md`
 
+## 脚本模式（可选）
+- 推荐顺序：先阅读 `docs/SETUP_MAC.md`，脚本模式用于引导与未来自动化。
+- 示例命令：
+  - `./bin/setup --help`
+  - `./bin/setup --dry-run`
+  - `./bin/setup --only homebrew`
+  - `./bin/setup --skip apps_cask`
+  - `./bin/setup --yes`
+- 日志说明：默认在 `logs/` 生成带时间戳的运行日志。
+
 ## 文档索引
 - `docs/README.md`：文档导航与说明
 - `docs/SETUP_MAC.md`：新机完整配置步骤（按顺序复制执行）
