@@ -7,8 +7,7 @@
 - 建议在稳定网络环境下执行。
 
 ## 脚本模式说明（可选）
-- 当前脚本模式已支持自动执行以下步骤：xcode_clt、homebrew、packages_cli、packages_media、apps_cask。
-- 其他步骤仍以本手册中的手动命令为准。
+- 当前脚本模式已支持自动执行以下步骤：xcode_clt、homebrew、packages_cli、packages_media、apps_cask、git、python。
 - 从桌面执行的推荐方式：
   1. 在终端进入仓库目录（例如 `cd ~/Desktop/Newloptop_Tools_mac`）。
   2. 如有需要，赋予可执行权限：`chmod +x ./bin/setup`。
@@ -18,7 +17,11 @@
   - `./bin/setup --dry-run`
   - `./bin/setup --only packages_media`
   - `./bin/setup --only apps_cask`
+  - `./bin/setup --only git`
+  - `./bin/setup --only python`
   - `./bin/setup --profile default --only apps_cask`
+- 环境自检示例：
+  - `./bin/doctor`
 
 ---
 
@@ -173,12 +176,9 @@ brew list --cask
 ```bash
 brew install pyenv
 cat >> ~/.zshrc <<'PYENV'
-# pyenv 初始化
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 PYENV
 source ~/.zshrc
 pyenv install 3.12.8

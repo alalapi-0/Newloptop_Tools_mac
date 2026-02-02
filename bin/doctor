@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# shellcheck source=../scripts/utils/log.sh
+source "${REPO_ROOT}/scripts/utils/log.sh"
+
+missing=0
+
+log_info "==> Newloptop_Tools_mac doctor"
+
+macos_version="$(sw_vers -productVersion 2>/dev/null || echo "unknown")"
+chip_type="$(uname -m 2>/dev/null || echo "unknown")"
+log_info "macOS version: ${macos_version}"
+log_info "Chip type: ${chip_type}"
+
+if xcode-select -p >/dev/null 2>&1; then
+  log_info "[OK] Xcode Command Line Tools"
+else
+  log_info "[MISSING] Xcode Command Line Tools"
+  log_info "Next: ./bin/setup --only xcode_clt"
+  missing=1
+fi
+
+if command -v brew >/dev/null 2>&1; then
+  log_info "[OK] Homebrew"
+else
+  log_info "[MISSING] Homebrew"
+  log_info "Next: ./bin/setup --only homebrew"
+  missing=1
+fi
+
+if command -v git >/dev/null 2>&1; then
+  log_info "[OK] git"
+else
+  log_info "[MISSING] git"
+  log_info "Next: ./bin/setup --only git"
+  missing=1
+fi
+
+if command -v ffmpeg >/dev/null 2>&1; then
+  log_info "[OK] ffmpeg"
+else
+  log_info "[MISSING] ffmpeg"
+  log_info "Next: ./bin/setup --only packages_media"
+  missing=1
+fi
+
+if command -v mediainfo >/dev/null 2>&1; then
+  log_info "[OK] mediainfo"
+else
+  log_info "[MISSING] mediainfo"
+  log_info "Next: ./bin/setup --only packages_media"
+  missing=1
+fi
+
+if command -v pyenv >/dev/null 2>&1; then
+  log_info "[OK] pyenv"
+else
+  log_info "[MISSING] pyenv"
+  log_info "Next: ./bin/setup --only python"
+  missing=1
+fi
+
+python_path="$(command -v python || true)"
+if [[ -n "${python_path}" ]]; then
+  python_version="$(python --version 2>&1)"
+  log_info "[OK] python: ${python_version}"
+  log_info "which python: ${python_path}"
+  if [[ "${python_path}" == *".pyenv"* ]]; then
+    log_info "pyenv-managed: yes"
+  else
+    log_info "pyenv-managed: no"
+  fi
+else
+  log_info "[MISSING] python"
+  log_info "Next: ./bin/setup --only python"
+  missing=1
+fi
+
+if [[ "${missing}" -eq 1 ]]; then
+  exit 1
+fi
+
+exit 0
