@@ -7,8 +7,7 @@
 
 ## 脚本模式（可选）
 - 推荐顺序：先阅读 `docs/SETUP_MAC.md`，脚本模式用于自动化与引导。
-- 当前已支持自动化步骤：xcode_clt、homebrew、packages_cli、packages_media、apps_cask。
-- git、python 相关步骤仍可能是占位实现，后续会完善。
+- 当前已支持自动化步骤：xcode_clt、homebrew、packages_cli、packages_media、apps_cask、git、python。
 - 示例命令：
   - `./bin/setup --help`
   - `./bin/setup --dry-run`
@@ -17,6 +16,8 @@
   - `./bin/setup --yes`
   - `./bin/setup --profile default --only packages_cli`
 - 日志说明：默认在 `logs/` 生成带时间戳的运行日志。
+- 环境自检示例：
+  - `./bin/doctor`
 
 ## 文档索引
 - `docs/README.md`：文档导航与说明
@@ -38,6 +39,5 @@
 ## Roadmap
 - `bin/setup`：一键基础环境配置入口
 - `bin/media`：常用音视频处理封装
-- `bin/doctor`：环境自检与修复建议
 - `scripts/media/`：批量转码、压缩、裁剪
 - `scripts/utils/`：文件整理、批量改名、校验
